@@ -26,6 +26,9 @@
   .btn { display:block; width:100%; text-align:center; text-decoration:none; font-family:inherit; font-size:17px; font-weight:600; line-height:1.2; border-radius:999px; padding:15px 18px; margin:10px 0 0; cursor:pointer; border:1.5px solid var(--ink); background:var(--ink); color:var(--paper); }
   .btn.ghost { background:transparent; color:var(--ink); }
   .hint { color:var(--ink-75); font-size:14px; margin:10px 0 0; }
+  .vpn { position:relative; margin:14px 0 0; padding:14px 14px 14px 52px; border:1.5px solid var(--amber); border-radius:14px; background:#FFFDF8; color:var(--ink); font-size:16px; line-height:1.45; }
+  .vpn::before { content:"!"; position:absolute; left:14px; top:14px; width:26px; height:26px; border-radius:50%; background:var(--amber); color:#fff; font-weight:800; font-size:17px; line-height:26px; text-align:center; }
+  .vpn b { display:block; margin-bottom:2px; }
   .ok { color:var(--amber-text); font-size:14px; min-height:20px; margin:8px 0 0; text-align:center; }
   .ok:empty { min-height:0; margin:0; }
   .help { font-size:15px; color:var(--ink-75); text-align:center; margin-top:26px; }
@@ -51,8 +54,8 @@
   <section class="card" id="browser" hidden>
     <h1 id="browser-title">Переходим на сайт…</h1>
     <a class="btn" id="site-link" href="#">Перейти на сайт</a>
+    <p class="vpn"><b>У части пользователей с включённым VPN сайт не открывается.</b>Если страница не загружается, отключите VPN и обновите её.</p>
     <div id="slow" hidden>
-      <p class="hint">У части пользователей с включённым VPN сайт не открывается. Отключите VPN и обновите страницу.</p>
       <button class="btn ghost" type="button" id="retry">Попробовать ещё раз</button>
     </div>
   </section>
