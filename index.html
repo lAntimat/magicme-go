@@ -36,18 +36,6 @@
   <p class="logo">magic me <i>book</i></p>
   <p class="tag">Персональная книга, где главный герой — ваш ребёнок</p>
 
-  <!-- Встроенный браузер Instagram на iPhone: только вручную -->
-  <section class="card" id="ios" hidden>
-    <h1>Откройте сайт в браузере</h1>
-    <p>Во встроенном браузере Instagram сайт может не открыться, а оплата не сработает.</p>
-    <ol>
-      <li>Нажмите <span class="dots">···</span> в правом верхнем углу.</li>
-      <li>Выберите «Открыть во внешнем браузере».</li>
-    </ol>
-    <button class="btn ghost" type="button" data-copy>Скопировать ссылку на сайт</button>
-    <p class="ok" data-copied aria-live="polite"></p>
-  </section>
-
   <!-- Встроенный браузер Instagram на Android: переходим сами -->
   <section class="card" id="android" hidden>
     <h1>Открываем сайт в браузере…</h1>
@@ -57,13 +45,22 @@
     <p class="ok" data-copied aria-live="polite"></p>
   </section>
 
-  <!-- Обычный браузер: проверяем, открывается ли сайт, и переходим -->
+  <!-- iPhone в Instagram и обычный браузер: проверяем, открывается ли сайт, и переходим -->
   <section class="card" id="browser" hidden>
     <h1 id="browser-title">Переходим на сайт…</h1>
     <a class="btn" id="site-link" href="#">Перейти на сайт</a>
     <div id="slow" hidden>
       <p class="hint">У части пользователей с включённым VPN сайт не открывается. Отключите VPN и обновите страницу.</p>
       <button class="btn ghost" type="button" id="retry">Попробовать ещё раз</button>
+    </div>
+    <div id="inapp" hidden>
+      <p class="hint">Или откройте сайт в Safari:</p>
+      <ol class="hint">
+        <li>Нажмите <span class="dots">···</span> в правом верхнем углу.</li>
+        <li>Выберите «Открыть во внешнем браузере».</li>
+      </ol>
+      <button class="btn ghost" type="button" data-copy>Скопировать ссылку на сайт</button>
+      <p class="ok" data-copied aria-live="polite"></p>
     </div>
   </section>
 
@@ -102,12 +99,12 @@
     window.location.href = intent;
     return;
   }
-  if (inApp) { show('ios'); return; }
-
-  // Обычный браузер. Сайт может не открыться с включённым VPN: проверяем
-  // маленьким запросом и переходим, только если сервер ответил.
+  // iPhone в Instagram и обычный браузер. Сайт может не открыться с
+  // включённым VPN: проверяем маленьким запросом и переходим, только если
+  // сервер ответил. В Instagram на iPhone ниже — как открыть в Safari.
   document.getElementById('site-link').href = TARGET;
   show('browser');
+  if (inApp) show('inapp');
   var check = function () {
     document.getElementById('slow').hidden = true;
     document.getElementById('browser-title').textContent = 'Переходим на сайт…';
