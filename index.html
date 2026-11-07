@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#FFF8EE">
+<title>magic me book — персональная книга для ребёнка</title>
+<meta name="description" content="Персональная книга, где главный герой — ваш ребёнок.">
+<style>
+  :root { --paper:#FFF8EE; --paper-warm:#FFEFD9; --ink:#3A2A1E; --ink-75:rgba(58,42,30,.75); --line:rgba(58,42,30,.18); --amber:#D9771F; --amber-text:#9E5510; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; background:var(--paper); color:var(--ink); }
+  body { font:17px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; min-height:100vh; display:flex; justify-content:center; }
+  main { width:100%; max-width:440px; padding:40px 22px 48px; }
+  .logo { font:600 28px/1.1 Georgia, "Times New Roman", serif; letter-spacing:.2px; margin:0 0 6px; }
+  .logo i { font-weight:400; }
+  .tag { color:var(--ink-75); margin:0 0 28px; font-size:15px; }
+  .card { background:var(--paper-warm); border:1px solid var(--line); border-radius:18px; padding:22px 20px; margin:0 0 18px; }
+  h1 { font:600 22px/1.25 Georgia, "Times New Roman", serif; margin:0 0 10px; }
+  p { margin:0 0 12px; }
+  ol { margin:0 0 4px; padding-left:22px; }
+  li { margin:0 0 8px; }
+  .dots { display:inline-block; font-weight:700; letter-spacing:1px; padding:0 6px; border:1px solid var(--line); border-radius:8px; background:#fff; }
+  .btn { display:block; width:100%; text-align:center; text-decoration:none; font-family:inherit; font-size:17px; font-weight:600; line-height:1.2; border-radius:999px; padding:15px 18px; margin:10px 0 0; cursor:pointer; border:1.5px solid var(--ink); background:var(--ink); color:var(--paper); }
+  .btn.ghost { background:transparent; color:var(--ink); }
+  .hint { color:var(--ink-75); font-size:14px; margin:10px 0 0; }
+  .ok { color:var(--amber-text); font-size:14px; min-height:20px; margin:8px 0 0; text-align:center; }
+  .help { font-size:15px; color:var(--ink-75); text-align:center; margin-top:26px; }
+  .help a { color:var(--amber-text); }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<main>
+  <p class="logo">magic me <i>book</i></p>
+  <p class="tag">Персональная книга, где главный герой — ваш ребёнок</p>
+
+  <!-- Встроенный браузер Instagram на iPhone: только вручную -->
+  <section class="card" id="ios" hidden>
+    <h1>Откройте сайт в браузере</h1>
+    <p>Во встроенном браузере Instagram сайт может не открыться, а оплата не сработает.</p>
+    <ol>
+      <li>Нажмите <span class="dots">···</span> в правом верхнем углу.</li>
+      <li>Выберите «Открыть во внешнем браузере».</li>
+    </ol>
+    <button class="btn ghost" type="button" data-copy>Скопировать ссылку на сайт</button>
+    <p class="ok" data-copied aria-live="polite"></p>
+  </section>
+
+  <!-- Встроенный браузер Instagram на Android: переходим сами -->
+  <section class="card" id="android" hidden>
+    <h1>Открываем сайт в браузере…</h1>
+    <p>Если ничего не произошло, нажмите кнопку.</p>
+    <a class="btn" id="android-open" href="#">Открыть в браузере</a>
+    <button class="btn ghost" type="button" data-copy>Скопировать ссылку на сайт</button>
+    <p class="ok" data-copied aria-live="polite"></p>
+  </section>
+
+  <!-- Обычный браузер: проверяем, открывается ли сайт, и переходим -->
+  <section class="card" id="browser" hidden>
+    <h1 id="browser-title">Переходим на сайт…</h1>
+    <a class="btn" id="site-link" href="#">Перейти на сайт</a>
+    <div id="slow" hidden>
+      <p class="hint">Если сайт не открывается, отключите VPN и обновите страницу.</p>
+      <button class="btn ghost" type="button" id="retry">Попробовать ещё раз</button>
+    </div>
+  </section>
+
+  <p class="help">Не получилось? Напишите нам —
+    <a href="https://max.ru/se14874871_bot?start=general" rel="noopener">в MAX</a>
+    или на <a href="mailto:hello@magicmebook.ru">hello@magicmebook.ru</a>
+  </p>
+</main>
+<script>
+(function () {
+  var SITE = 'https://magicmebook.ru/';
+  var QUERY = '?utm_source=instagram&utm_medium=bio&utm_campaign=go';
+  var TARGET = SITE + QUERY;
+  var ua = navigator.userAgent || '';
+  var inApp = /Instagram|FBAN|FBAV|FB_IAB|FBIOS/i.test(ua);
+  var android = /Android/i.test(ua);
+  var show = function (id) { document.getElementById(id).hidden = false; };
+
+  document.querySelectorAll('[data-copy]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      var note = button.parentNode.querySelector('[data-copied]');
+      var done = function () { note.textContent = 'Ссылка скопирована. Вставьте её в Safari или Chrome.'; };
+      var fail = function () { note.textContent = 'Скопируйте вручную: magicmebook.ru'; };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText('https://magicmebook.ru').then(done, fail);
+      } else { fail(); }
+    });
+  });
+
+  if (inApp && android) {
+    // Instagram на Android отдаёт intent:// системе: открывается Chrome.
+    var intent = 'intent://magicmebook.ru/' + QUERY + '#Intent;scheme=https;package=com.android.chrome;' +
+      'S.browser_fallback_url=' + encodeURIComponent(TARGET) + ';end';
+    document.getElementById('android-open').href = intent;
+    show('android');
+    window.location.href = intent;
+    return;
+  }
+  if (inApp) { show('ios'); return; }
+
+  // Обычный браузер. Сайт может не открыться с включённым VPN: проверяем
+  // маленьким запросом и переходим, только если сервер ответил.
+  document.getElementById('site-link').href = TARGET;
+  show('browser');
+  var check = function () {
+    document.getElementById('slow').hidden = true;
+    document.getElementById('browser-title').textContent = 'Переходим на сайт…';
+    var answered = false, late = false;
+    var probe = new Image();
+    var go = function () { if (!answered) { answered = true; window.location.replace(TARGET); } };
+    probe.onload = go; // сайт ответил — переходим, даже если не сразу
+    // Быстрая ошибка = сервер ответил не картинкой, связь есть. Ошибка после
+    // таймаута = соединение так и не открылось (VPN): остаёмся с подсказкой.
+    probe.onerror = function () { if (!late) go(); };
+    probe.src = SITE + 'favicon.ico?go=' + Date.now();
+    setTimeout(function () {
+      if (answered) return;
+      late = true;
+      document.getElementById('browser-title').textContent = 'Сайт не отвечает';
+      document.getElementById('slow').hidden = false;
+    }, 5000);
+  };
+  document.getElementById('retry').addEventListener('click', check);
+  check();
+})();
+</script>
+</body>
+</html>
