@@ -79,7 +79,7 @@
 <script>
 (function () {
   var SITE = 'https://magicmebook.ru/';
-  var QUERY = '?utm_source=instagram&utm_medium=bio&utm_campaign=go';
+  var QUERY = '?utm_source=instagram&utm_medium=social&utm_campaign=go';
   var TARGET = SITE + QUERY;
   var ua = navigator.userAgent || '';
   var inApp = /Instagram|FBAN|FBAV|FB_IAB|FBIOS/i.test(ua);
@@ -90,9 +90,9 @@
     button.addEventListener('click', function () {
       var note = button.parentNode.querySelector('[data-copied]');
       var done = function () { note.textContent = 'Ссылка скопирована. Вставьте её в Safari или Chrome.'; };
-      var fail = function () { note.textContent = 'Скопируйте вручную: magicmebook.ru'; };
+      var fail = function () { note.textContent = 'Скопируйте вручную: ' + TARGET; };
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText('https://magicmebook.ru').then(done, fail);
+        navigator.clipboard.writeText(TARGET).then(done, fail);
       } else { fail(); }
     });
   });
