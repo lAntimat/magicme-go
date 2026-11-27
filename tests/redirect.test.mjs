@@ -5,10 +5,11 @@ import { runInNewContext } from 'node:vm';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
-const collector = 'https://stats.example.test';
+const configuredEndpoint = html.match(/<meta name="go-statistics-endpoint" content="([^"]*)">/)?.[1];
+const siteEndpoint = 'https://magicmebook.ru/site-api/go-activity';
 const target = 'https://magicmebook.ru/?utm_source=instagram&utm_medium=social&utm_campaign=go';
 
-function load({ userAgent = '', base = collector, offline = false, clipboard = false } = {}) {
+function load({ userAgent = '', endpoint = configuredEndpoint, offline = false, clipboard = false } = {}) {
   const timeline = [];
   const probes = [];
   const copied = {};
@@ -27,7 +28,7 @@ function load({ userAgent = '', base = collector, offline = false, clipboard = f
     URL,
     document: {
       getElementById: (id) => ids[id],
-      querySelector: (selector) => selector === 'meta[name="go-statistics-base"]' ? { content: base } : null,
+      querySelector: (selector) => selector === 'meta[name="go-statistics-endpoint"]' ? { content: endpoint } : null,
       querySelectorAll: (selector) => selector === '[data-copy]' ? [copy] : [],
     },
     navigator: {
@@ -55,8 +56,8 @@ test('Android sends a page opening before automatic intent without counting an a
   const { timeline, requests, ids } = load({ userAgent: 'Instagram Android' });
   assert.deepEqual(timeline, ['go_open', ids['android-open'].href]);
   assert.equal(timeline[1], `intent://magicmebook.ru/?utm_source=instagram&utm_medium=social&utm_campaign=go#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(target)};end`);
-  assert.deepEqual(requests[0], [`${collector}/v1/events`, {
-    method: 'POST', body: 'go_open', credentials: 'omit', referrerPolicy: 'no-referrer',
+  assert.deepEqual(requests[0], [siteEndpoint, {
+    method: 'POST', body: 'go_open', mode: 'cors', credentials: 'omit', referrerPolicy: 'no-referrer',
     keepalive: true,
   }]);
   ids['android-open'].click();
@@ -83,8 +84,16 @@ test('copy clicks are counted whether the clipboard works or offers the manual f
   }
 });
 
-test('missing collector configuration leaves the normal redirect working', () => {
-  const { timeline, probes } = load({ base: '' });
-  probes[0].onerror();
-  assert.deepEqual(timeline, [target]);
+test('a temporary HTTPS endpoint keeps its configured path', () => {
+  const endpoint = 'https://stats.example.test:8443/synthetic/go-activity';
+  const { requests } = load({ endpoint });
+  assert.equal(requests[0]?.[0], endpoint);
+});
+
+test('empty or unsuitable endpoint configuration leaves the normal redirect working', () => {
+  for (const endpoint of ['', 'http://localhost:8000/go-activity', '/go-activity', 'https://test.example/go-activity?foo=bar', 'https://test.example/go-activity#foo', 'https://user:test@test.example/go-activity']) {
+    const { timeline, probes } = load({ endpoint });
+    probes[0].onerror();
+    assert.deepEqual(timeline, [target], endpoint);
+  }
 });
