@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#FFF8EE">
+<meta name="go-statistics-base" content="">
 <title>magic me book — персональная книга для ребёнка</title>
 <meta name="description" content="Персональная книга, где главный герой — ваш ребёнок.">
 <style>
@@ -86,8 +87,29 @@
   var android = /Android/i.test(ua);
   var show = function (id) { document.getElementById(id).hidden = false; };
 
+  var statisticsUrl;
+  try {
+    var statisticsBase = document.querySelector('meta[name="go-statistics-base"]').content;
+    var statisticsOrigin = new URL(statisticsBase);
+    if (statisticsOrigin.protocol === 'https:' && statisticsOrigin.href === statisticsOrigin.origin + '/') {
+      statisticsUrl = statisticsOrigin.origin + '/v1/events';
+    }
+  } catch (error) { /* Invalid or empty configuration. */ }
+  var track = function (event) {
+    if (!statisticsUrl || typeof fetch !== 'function') return;
+    fetch(statisticsUrl, {
+      method: 'POST', body: event, credentials: 'omit', referrerPolicy: 'no-referrer', keepalive: true
+    }).catch(function () {});
+  };
+  track('go_open');
+
+  ['android-open', 'site-link'].forEach(function (id) {
+    document.getElementById(id).addEventListener('click', function () { track('go_click_open'); });
+  });
+
   document.querySelectorAll('[data-copy]').forEach(function (button) {
     button.addEventListener('click', function () {
+      track('go_click_copy');
       var note = button.parentNode.querySelector('[data-copied]');
       var done = function () { note.textContent = 'Ссылка скопирована. Вставьте её в Safari или Chrome.'; };
       var fail = function () { note.textContent = 'Скопируйте вручную: ' + TARGET; };
